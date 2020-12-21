@@ -16,7 +16,8 @@ public class DroneService {
     private final DroneDAO droneDAO;
 
     @Autowired
-    public DroneService(@Qualifier("dummyDao") DroneDAO droneDAO) {
+    //this annotation binds the business layer service to data access object, switching Qualifier to change data access
+    public DroneService(@Qualifier("postgresDB") DroneDAO droneDAO) {
         this.droneDAO = droneDAO;
     }
 
