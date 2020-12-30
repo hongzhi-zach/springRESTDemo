@@ -1,5 +1,7 @@
 package robsense.roblogger.springWebAppDemo.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import robsense.roblogger.springWebAppDemo.model.Drone;
 
@@ -9,6 +11,12 @@ import java.util.UUID;
 
 @Repository("postgresDB")
 public class DroneDataAccess implements DroneDAO{
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public DroneDataAccess(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public int postDrone(Drone drone, UUID uuid) {
@@ -17,12 +25,23 @@ public class DroneDataAccess implements DroneDAO{
 
     @Override
     public List<Drone> selectAllDrones() {
-        return List.of(new Drone( "FROM POSTGRES DB", UUID.randomUUID()));
+        final String getQuery = "SELECT lable FROM drone";
+        return jdbcTemplate.query(getQuery, (resultSet, i) ->{
+            String lable = resultSet.getString("lable");
+            UUID id = UUID.fromString(resultSet.getString("id"));
+            return new Drone(lable, id);
+        });
     }
 
     @Override
     public Optional<Drone> selectDroneById(UUID id) {
-        return Optional.empty();
+        final String sql = "SELECT id, name FROM drone WHERE id = ?";
+        Drone drone = jdbcTemplate.queryForObject(sql, new Object[]{id}, (resultSet, i) ->{
+            String lable = resultSet.getString("lable");
+            UUID newID = UUID.fromString(resultSet.getString("id"));
+            return new Drone(lable, newID);
+        });
+        return Optional.ofNullable(drone);
     }
 
     @Override

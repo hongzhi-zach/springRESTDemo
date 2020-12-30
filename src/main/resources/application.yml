@@ -1,0 +1,8 @@
+app:
+  datasource:
+    postgres:
+      username: postgres
+      password: password
+      databaseName: spring_web_demo
+      pool-size: 100
+      jdbc-url: jdbc:postgresql://192.168.56.1:1234/
